@@ -5,7 +5,7 @@ import "./App.css";
 import Game from "./pages/Game";
 import Menu from "./pages/Menu";
 
-function App() {
+const App = () => {
 
   const [ingame, setIngame] = useState(false);
 

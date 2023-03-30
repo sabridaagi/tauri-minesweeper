@@ -4,7 +4,7 @@ interface IProps {
   changeIngame(): void;
 }
 
-function Menu(props: IProps) {
+const Menu = (props: IProps) => {
   return (
     <div className="menu">
       <h1>Welcome to minesweeper game</h1>
