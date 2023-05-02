@@ -1,22 +1,11 @@
 import React from "react";
 import { useState } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
-import "./App.css";
 import Game from "./pages/Game";
 import Menu from "./pages/Menu";
+import "./styles/App.css";
 
 const App = () => {
-
   const [ingame, setIngame] = useState(false);
-
-  //KEEPING FOR UNDERSTANDING
-  // const [greetMsg, setGreetMsg] = useState("");
-  // const [name, setName] = useState("");
-
-  // async function greet() {
-  //   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  //   setGreetMsg(await invoke("greet", { name }));
-  // }
 
   return (
     <React.Fragment>

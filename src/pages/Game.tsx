@@ -1,26 +1,24 @@
-import React, { useEffect } from "react";
-import Board from "./Board";
-import "./Game.css";
+import React, { useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api/tauri";
+import BoardTable from "../components/BoardTable";
+import "../styles/Game.css";
+import { splitArray } from "../utils/Array";
 
 interface IProps {
   changeIngame(): void;
 }
 
 const Game = (props: IProps) => {
-  let table: number[][] = [];
-  //Populate table 2d array
 
   return (
     <React.Fragment>
       <div className="game">
         <h1>Game</h1>
         <button onClick={() => props.changeIngame()}>Leave game</button>
-        <Board board={table} />
-        {/* Generate a basic board */}
-
+        <BoardTable width={35} height={20} bombs={10} />
       </div>
     </React.Fragment>
-  )
+  );
 }
 
 export default Game

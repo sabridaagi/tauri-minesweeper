@@ -1,0 +1,16 @@
+.game {
+  text-align: center;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+  -webkit-border-vertical-spacing: 0;
+  -webkit-border-horizontal-spacing: 0;
+}
+
+td * {
+  height: 22px;
+  width: 22px;
+  cursor: pointer;
+}

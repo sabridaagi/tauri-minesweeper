@@ -1,4 +1,4 @@
-import "./Menu.css";
+import "../styles/Menu.css";
 
 interface IProps {
   changeIngame(): void;
