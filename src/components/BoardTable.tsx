@@ -14,10 +14,10 @@ function BoardTable(props: IProps) {
 
   //Board generation at load
   useEffect(() => {
-    invoke("generate_board", {  
-        width: props.width, 
-        height: props.height, 
-        numberBombs: props.bombs }).then(res => {
+    invoke("generate_board", {
+      width: props.width,
+      height: props.height,
+      numberBombs: props.bombs }).then(res => {
       let resBoard = JSON.parse(res as string);
       setBoard(splitArray(resBoard.cells, resBoard.width, resBoard.height));
     });
@@ -38,6 +38,7 @@ function BoardTable(props: IProps) {
     invoke("cell_clicked", { x: x, y: y }).then(res => {
       let resBoard = JSON.parse(res as string);
       setBoard(splitArray(resBoard.cells, resBoard.width, resBoard.height));
+      console.table(board)
     });
   }
 
@@ -45,13 +46,13 @@ function BoardTable(props: IProps) {
     invoke("cell_right_clicked", { x: x, y: y });
   }
 
-  let handleBoxComponent = (x: number, y: number) => {
+  let handleBoxComponent = (x: number, y: number, value: number) => {
     switch(board[x][y]) {
       case 0: return <Empty />        // Empty
       case 9: return <Bomb />         // Bomb
       case 10: return <Hidden />      // Unopened
       case 11: return ""              // Flagged
-      default: return <Numbered />    // Number
+      default: return <Numbered value={value} />    // Number
     }
   }
   
@@ -67,7 +68,7 @@ function BoardTable(props: IProps) {
                 onContextMenu={() => handleBoxRightClick(i,j)}
               >
                 
-                {handleBoxComponent(i,j)}
+                {handleBoxComponent(i,j, board[i][j])}
               </td>
             )}
           </tr>

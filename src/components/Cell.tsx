@@ -6,9 +6,11 @@ let Empty = () => {
   )
 }
 
-let Numbered = () => {
+let Numbered = (props: { value: number }) => {
   return (
-    <div className="empty" />
+    <div style={{ backgroundColor: "rgb(207, 204, 204)" }}>
+      {props.value}
+    </div>
   )
 }
 let Bomb = () => {

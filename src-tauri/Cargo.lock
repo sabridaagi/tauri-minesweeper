@@ -2453,8 +2453,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-minesweeper"
-version = "0.0.0"
+version = "1.0.0"
 dependencies = [
+ "rand 0.8.5",
  "serde",
  "serde_json",
  "tauri",

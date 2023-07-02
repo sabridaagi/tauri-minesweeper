@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use serde::{Deserialize, Serialize};
+use core::num;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::MutexGuard;
@@ -30,14 +31,22 @@ fn generate_board(
     height: usize, 
     number_bombs: u8) -> String {
 
-    // Setting the created bord
+    // Getting app state and creating the board
     let mut game: MutexGuard<Game> = app_state.game.lock().unwrap();
-    let board: Board = create_board(width, height);
+    let mut board: Board = create_board(width, height);
+
+    // Reset
+    game.opened_cells.clear();
+
+    // Generate bombs map
+    board = genetare_bombs_map(&board, number_bombs);
+
+    // Save it in the game state
     game.board = board;
 
     // Board sent to the front-end
-    let hidden_board: Board = hide_unopened_cells(&game.board, &game.opened_cells);
-    return serde_json::to_string(&hidden_board).expect("Failed to serialize board");
+    //let hidden_board: Board = hide_unopened_cells(&game.board, &game.opened_cells);
+    return serde_json::to_string(&game.board).expect("Failed to serialize board");
 }
 
 // Cell clicked

@@ -15,7 +15,7 @@ const Game = (props: IProps) => {
       <div className="game">
         <h1>Game</h1>
         <button onClick={() => props.changeIngame()}>Leave game</button>
-        <BoardTable width={35} height={20} bombs={10} />
+        <BoardTable width={35} height={20} bombs={1} />
       </div>
     </React.Fragment>
   );
