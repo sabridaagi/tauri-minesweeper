@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use serde::{Deserialize, Serialize};
-use core::num;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::MutexGuard;
@@ -13,7 +12,7 @@ use board::*;
 // Game state for the tauri app
 #[derive(Default)]
 struct AppState {
-    game: Mutex<Game>
+    game_state: Mutex<Game>
 }
 
 #[derive(Serialize, Deserialize, Default)] // JSON
@@ -29,24 +28,21 @@ fn generate_board(
     app_state: tauri::State<Arc<AppState>>,
     width: usize, 
     height: usize, 
-    number_bombs: u8) -> String {
+    number_bombs: u16) -> String {
 
     // Getting app state and creating the board
-    let mut game: MutexGuard<Game> = app_state.game.lock().unwrap();
-    let mut board: Board = create_board(width, height);
+    let mut game_state: MutexGuard<Game> = app_state.game_state.lock().unwrap();
+    let mut board = Board::new(width, height);
 
-    // Reset
-    game.opened_cells.clear();
-
-    // Generate bombs map
-    board = genetare_bombs_map(&board, number_bombs);
+    game_state.opened_cells.clear(); // Reset
+    board = genetare_bombs_map(&board, number_bombs); // Generate bombs map
 
     // Save it in the game state
-    game.board = board;
+    game_state.board = board;
 
     // Board sent to the front-end
-    //let hidden_board: Board = hide_unopened_cells(&game.board, &game.opened_cells);
-    return serde_json::to_string(&game.board).expect("Failed to serialize board");
+    // let hidden_board: Board = board.hide_unopened_cells(&game_state.opened_cells);
+    return serde_json::to_string(&game_state.board).expect("Failed to serialize board");
 }
 
 // Cell clicked
@@ -57,8 +53,8 @@ fn cell_clicked(app_state: tauri::State<Arc<AppState>>, x: usize, y: usize) -> S
     // if revelad do nothing
     // if not add it to reveal it
 
-    let mut game: MutexGuard<Game> = app_state.game.lock().unwrap();
-    let new_value: u16 = (x * game.board.height + y) as u16;
+    let mut game: MutexGuard<Game> = app_state.game_state.lock().unwrap();
+    let new_value: u16 = (x * game.board.width + y) as u16;
 
     if !game.opened_cells.contains(&new_value) {
         game.opened_cells.push(new_value);
@@ -80,9 +76,9 @@ fn cell_right_clicked(board: Board) {
 // Update the game status
 #[tauri::command]
 fn update_game_state(app_state: tauri::State<Arc<AppState>>, new_status: u8) -> u8 {
-    let mut game: MutexGuard<Game> = app_state.game.lock().unwrap();
-    game.status = new_status;
-    return game.status;
+    let mut game_state: MutexGuard<Game> = app_state.game_state.lock().unwrap();
+    game_state.status = new_status;
+    return game_state.status;
 }
 
 fn main() {

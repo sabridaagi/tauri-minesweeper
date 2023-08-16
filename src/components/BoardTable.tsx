@@ -51,7 +51,6 @@ function BoardTable(props: IProps) {
       case 0: return <Empty />        // Empty
       case 9: return <Bomb />         // Bomb
       case 10: return <Hidden />      // Unopened
-      case 11: return ""              // Flagged
       default: return <Numbered value={value} />    // Number
     }
   }

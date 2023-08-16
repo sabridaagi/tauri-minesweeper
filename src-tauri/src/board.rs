@@ -1,21 +1,13 @@
 use serde::{Deserialize, Serialize};
 use rand::Rng;
 
-/*
- * For cells:
- *  0 is an empty cell
- *  1-8 Represent the number of bombs around
- *  9 is a bomb cell
- *  10 is unopenned
- *  11 is flagged
- */
-pub type Cell = u8;
+/// * 0 is an empty cell
+/// * 1-8 Represent the number of bombs around
+/// * 9 is a bomb cell
+/// * 10 is unopened
+pub type Cell = u16;
 
-/*
- * A board has a width, height and a Vector of cells.
- * This is the main interaction with the front-end
- * It sends the Board with the updated cells values
- */
+/// static state of a board, does not change after init
 #[derive(Serialize, Deserialize, Default)]
 pub struct Board {
     pub width: usize,
@@ -33,12 +25,25 @@ impl Clone for Board {
     }
 }
 
-/*
-* Generate the board at the beggining of the game
-*/
-pub fn create_board(width: usize, height: usize) -> Board {
-    let cells = vec![0; width * height ]; // Vector
-    return Board { width, height, cells }
+impl Board {
+    /// Generate the board
+    pub fn new(width: usize, height: usize) -> Board {
+        Board { width, height, cells: vec![0; width * height] }
+    }
+
+    /// Generates the bombs depending on the number of bombs
+    pub fn generate_bombs(&self, number_bombs: usize) {
+        // TODO
+    }
+
+    /// Generates a new board but with hidden cells
+    pub fn hide_unopened_cells(&self, opened_cells: &Vec<u16>) -> Board {
+        let mut hidden_board = self.clone();
+
+        // TODO
+
+        hidden_board
+    }
 }
 
 /*
@@ -60,12 +65,10 @@ pub fn hide_unopened_cells(board: &Board, opened_cells: &Vec<u16>) -> Board {
 
     return new_board;
 }
-
 /*
 * Generate bombs 
 */
-
-pub fn genetare_bombs_map(board: &Board, number_bombs: u8) -> Board {
+pub fn genetare_bombs_map(board: &Board, number_bombs: u16) -> Board {
     let mut new_board = board.clone();
     new_board.cells.clear();
 
@@ -102,6 +105,7 @@ pub fn genetare_bombs_map(board: &Board, number_bombs: u8) -> Board {
 /*
 * function generating the number of bombs around
 */
-fn count_neighbor_bombs(board: &Board, position: usize) -> u8 {
+fn count_neighbor_bombs(board: &Board, position: usize) -> u16 {
     // TODO
+    3
 }
