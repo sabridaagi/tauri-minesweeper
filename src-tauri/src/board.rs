@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
-use rand::Rng;
+use rand::thread_rng;
+use rand::seq::SliceRandom;
 
 /*
  * A board has a width, height and a Vector of cells.
@@ -38,6 +39,7 @@ impl Board {
     }
     
     pub fn hide_cells(&self, opened_cells: &Vec<u16>) -> Board {
+        // cloning to return a new board
         let mut cloned_board = self.clone();
 
         for (index, cell) in cloned_board.cells.iter_mut().enumerate() {
@@ -49,46 +51,24 @@ impl Board {
         cloned_board
     }
 
+    pub fn genetare_bombs(&mut self, number_bombs: usize) {
+        let mut rng = thread_rng();
+
+        let mut indices: Vec<usize> = (0..self.cells.len()).collect();
+        indices.shuffle(&mut rng);
+
+        for index in indices.iter().take(number_bombs) {
+            self.cells[*index] = 9
+        }
+
+        self.update_neighbors_count();
+    }
+
     pub fn generate_response(&self, opened_cells: &Vec<u16>) -> String {
         serde_json::to_string(&self.hide_cells(&opened_cells)).expect("Failed to serialize board")
     }
-
-    pub fn genetare_bombs(&self, number_bombs: &usize) {
-        let mut new_board = self.clone();
-        new_board.cells.clear();
     
-        // Generate random bomb positions
-        let mut rng = rand::thread_rng();
-        let mut bomb_positions = Vec::new();
-    
-        // Noise
-        while bomb_positions.len() < *number_bombs {
-            let position = rng.gen_range(0..(self.width * self.height));
-            if !bomb_positions.contains(&position) {
-                bomb_positions.push(position);
-            }
-        }
-    
-        for i in 0..new_board.width * new_board.height {
-            let cell = if bomb_positions.contains(&i) {
-                9 // Bomb cell has value 9
-            } else {
-                0 // Empty
-            };
-            new_board.cells.push(cell);
-        }
-    
-        for i in 0..new_board.width * new_board.height {
-            if new_board.cells[i] == 0 {
-                new_board.cells[i] = count_neighbor_bombs(&new_board, i);
-            }
-        }
+    fn update_neighbors_count(&mut self) {
+        // TODO
     }
-}
-
-/*
-* function generating the number of bombs around
-*/
-fn count_neighbor_bombs(board: &Board, position: usize) -> u8 {
-    return 1
 }

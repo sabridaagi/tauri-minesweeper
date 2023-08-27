@@ -34,10 +34,10 @@ fn generate_board(
     let mut game_state: MutexGuard<Game> = app_state.game.lock().unwrap();
     game_state.opened_cells.clear();
     
-    let board = Board::new(width, height);
+    let mut board = Board::new(width, height);
 
     // Generate bombs map
-    board.genetare_bombs(&number_bombs);
+    board.genetare_bombs(number_bombs);
 
     // Save it in the game state
     game_state.board = board;
