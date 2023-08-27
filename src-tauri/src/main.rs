@@ -12,7 +12,7 @@ use board::*;
 // Game state for the tauri app
 #[derive(Default)]
 struct AppState {
-    game_state: Mutex<Game>
+    game: Mutex<Game>
 }
 
 #[derive(Serialize, Deserialize, Default)] // JSON
@@ -31,10 +31,10 @@ fn generate_board(
     number_bombs: usize) -> String {
 
     // Getting app state and creating the board
-    let mut game: MutexGuard<Game> = app_state.game.lock().unwrap();
-    game.opened_cells.clear();
+    let mut game_state: MutexGuard<Game> = app_state.game.lock().unwrap();
+    game_state.opened_cells.clear();
     
-    let mut board = Board::new(width, height);
+    let board = Board::new(width, height);
 
     // Generate bombs map
     board.genetare_bombs(&number_bombs);
@@ -42,40 +42,30 @@ fn generate_board(
     // Save it in the game state
     game_state.board = board;
 
-    // Board sent to the front-end
-    return game.board.generate_response(&game.opened_cells);
+    game_state.board.generate_response(&game_state.opened_cells)
 }
 
 // Cell clicked
 #[tauri::command]
-fn cell_clicked(app_state: tauri::State<Arc<AppState>>, x: usize, y: usize) -> String {
-    println!("x: {}, y: {}", x , y);
-    // see if this cell is already revealed
-    // if revelad do nothing
-    // if not add it to reveal it
+fn cell_clicked(app_state: tauri::State<Arc<AppState>>, x: usize, y: usize) -> String { 
+    let mut game_state: MutexGuard<Game> = app_state.game.lock().unwrap();
+    
+    // calculate the new index
+    let new_value: u16 = (y * game_state.board.width + x) as u16;
 
-    let mut game: MutexGuard<Game> = app_state.game_state.lock().unwrap();
-    let new_value: u16 = (x * game.board.width + y) as u16;
-
-    if !game.opened_cells.contains(&new_value) {
-        game.opened_cells.push(new_value);
+    if !game_state.opened_cells.contains(&new_value) {
+        game_state.opened_cells.push(new_value);
     }
 
-    // we return the user_board
-    return game.board.generate_response(&game.opened_cells);}
-
-// Cell right-clicked
-fn cell_right_clicked(board: Board) {
-    //TODO
-    // we return the user_board
+    game_state.board.generate_response(&game_state.opened_cells)
 }
 
 // Update the game status
 #[tauri::command]
 fn update_game_state(app_state: tauri::State<Arc<AppState>>, new_status: u8) -> u8 {
-    let mut game_state: MutexGuard<Game> = app_state.game_state.lock().unwrap();
-    game_state.status = new_status;
-    return game_state.status;
+    let mut game: MutexGuard<Game> = app_state.game.lock().unwrap();
+    game.status = new_status;
+    return game.status;
 }
 
 fn main() {
@@ -83,8 +73,8 @@ fn main() {
         .manage(Arc::new(AppState::default()))
         .invoke_handler(tauri::generate_handler![
             generate_board,
+            cell_clicked,
             update_game_state,
-            cell_clicked
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -9,7 +9,7 @@ interface IProps {
   bombs: number;
 }
 
-function BoardTable(props: IProps) {
+let BoardTable = (props: IProps) => {
   const [board, setBoard] = useState<number[][]>([]);
 
   //Board generation at load
@@ -46,7 +46,7 @@ function BoardTable(props: IProps) {
     invoke("cell_right_clicked", { x: x, y: y });
   }
 
-  let handleBoxComponent = (x: number, y: number, value: number) => {
+  let Cell = (x: number, y: number, value: number) => {
     switch(board[x][y]) {
       case 0: return <Empty />        // Empty
       case 9: return <Bomb />         // Bomb
@@ -63,11 +63,10 @@ function BoardTable(props: IProps) {
             {rows.map((_, j) => 
               <td                   
                 key={j} 
-                onClick={() => handleBoxClick(i,j)}
-                onContextMenu={() => handleBoxRightClick(i,j)}
+                onClick={() => handleBoxClick(j, i)}
+                onContextMenu={() => handleBoxRightClick(j, i)}
               >
-                
-                {handleBoxComponent(i,j, board[i][j])}
+                {Cell(i,j, board[i][j])}
               </td>
             )}
           </tr>

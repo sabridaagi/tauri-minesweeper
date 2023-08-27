@@ -1,10 +1,10 @@
 let splitArray = (array: number[], width: number, height: number): number[][] => {
-  if(width * height !== array.length) throw new Error("Input array must match product of width and height");
-  let output: number[][] = new Array(width);
-  for (let i = 0; i < width; i++) {
-    output[i] = new Array(height);
-    for (let j = 0; j < height; j++) {
-      output[i][j] = array[i * height + j];
+  if(height * width !== array.length) throw new Error("Input array must match product of width and height");
+  let output: number[][] = new Array(height);
+  for (let i = 0; i < height; i++) {
+    output[i] = new Array(width);
+    for (let j = 0; j < width; j++) {
+      output[i][j] = array[i * width + j];
     }
   }
   return output
