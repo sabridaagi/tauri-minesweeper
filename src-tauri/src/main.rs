@@ -20,7 +20,7 @@ struct AppState {
 pub struct Game {
     pub status: u8, // 0: menu, 1: in-game, 2: paused
     pub board: Board,
-    pub opened_cells: Vec<u16>
+    pub opened_cells: Vec<u16> // indexes of opened cells
 }
 
 // Generate the board and return it as a JSON string
@@ -29,24 +29,22 @@ fn generate_board(
     app_state: tauri::State<Arc<AppState>>,
     width: usize, 
     height: usize, 
-    number_bombs: u8) -> String {
+    number_bombs: usize) -> String {
 
     // Getting app state and creating the board
     let mut game: MutexGuard<Game> = app_state.game.lock().unwrap();
-    let mut board: Board = create_board(width, height);
-
-    // Reset
     game.opened_cells.clear();
+    
+    let mut board = Board::new(width, height);
 
     // Generate bombs map
-    board = genetare_bombs_map(&board, number_bombs);
+    board.genetare_bombs(&number_bombs);
 
     // Save it in the game state
     game.board = board;
 
     // Board sent to the front-end
-    //let hidden_board: Board = hide_unopened_cells(&game.board, &game.opened_cells);
-    return serde_json::to_string(&game.board).expect("Failed to serialize board");
+    return game.board.generate_response(&game.opened_cells);
 }
 
 // Cell clicked
@@ -64,12 +62,8 @@ fn cell_clicked(app_state: tauri::State<Arc<AppState>>, x: usize, y: usize) -> S
         game.opened_cells.push(new_value);
     }
 
-    // Board sent to the front-end
-    let hidden_board: Board = hide_unopened_cells(&game.board, &game.opened_cells);
-
     // we return the user_board
-    return serde_json::to_string(&hidden_board).expect("Failed to serialize board");
-}
+    return game.board.generate_response(&game.opened_cells);}
 
 // Cell right-clicked
 fn cell_right_clicked(board: Board) {
