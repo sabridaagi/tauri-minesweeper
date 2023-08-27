@@ -15,7 +15,9 @@ let Numbered = (props: { value: number }) => {
 }
 let Bomb = () => {
   return (
-    <div className="empty" />
+    <div className="empty" >
+      B
+    </div>
   )
 }
 
