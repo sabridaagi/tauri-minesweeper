@@ -10,4 +10,14 @@ let splitArray = (array: number[], width: number, height: number): number[][] =>
   return output
 }
 
-export { splitArray }
+let contains = (array: number[][], searchValue: number): boolean => {
+  for(let i = 0; i < array.length; i++) {
+    for(let j = 0; j < array[i].length; j++) {
+      if(array[i][j] === searchValue) return true;
+    }
+  }
+
+  return false;
+}
+
+export { splitArray, contains }

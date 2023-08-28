@@ -17,7 +17,6 @@ struct AppState {
 
 #[derive(Serialize, Deserialize, Default)] // JSON
 pub struct Game {
-    pub status: u8, // 0: menu, 1: in-game, 2: paused
     pub board: Board,
     pub opened_cells: Vec<u16>, // indexes of opened cells
 }
@@ -54,21 +53,12 @@ fn cell_clicked(app_state: tauri::State<Arc<AppState>>, x: usize, y: usize) -> S
     game_state.board.generate_response(&game_state.opened_cells)
 }
 
-// Update the game status
-#[tauri::command]
-fn update_game_state(app_state: tauri::State<Arc<AppState>>, new_status: u8) -> u8 {
-    let mut game: MutexGuard<Game> = app_state.game.lock().unwrap();
-    game.status = new_status;
-    return game.status;
-}
-
 fn main() {
     tauri::Builder::default()
         .manage(Arc::new(AppState::default()))
         .invoke_handler(tauri::generate_handler![
             generate_board,
             cell_clicked,
-            update_game_state,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

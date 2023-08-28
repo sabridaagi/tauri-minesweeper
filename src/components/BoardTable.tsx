@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 import { invoke } from "@tauri-apps/api/tauri";
 import { Empty, Bomb, Hidden, Numbered } from './Cell';
-import { splitArray } from '../utils/Array';
+import { splitArray, contains } from '../utils/Array';
 
 interface IProps {
   width: number;
   height: number;
   bombs: number;
+  onGameOver(): void;
 }
 
 let BoardTable = (props: IProps) => {
   const [board, setBoard] = useState<number[][]>([]);
+  const [gameOver, setGameOver] = useState<boolean>(false);
 
-  //Board generation at load
+  // Board generation at load
   useEffect(() => {
     invoke("generate_board", {
       width: props.width,
@@ -23,7 +25,7 @@ let BoardTable = (props: IProps) => {
     });
   }, []);
 
-  //Right click
+  // disable right click through the board
   useEffect(() => {
     const handleContextMenu = (e: any) => {
       e.preventDefault()
@@ -34,12 +36,26 @@ let BoardTable = (props: IProps) => {
     }
   }, []);
 
+  // update when gameOver
+  useEffect(() => {
+    if(gameOver) {
+      props.onGameOver();
+    }
+  }, [gameOver]);
+
   let handleBoxClick = (x: number, y: number) => {
-    invoke("cell_clicked", { x: x, y: y }).then(res => {
-      let resBoard = JSON.parse(res as string);
-      setBoard(splitArray(resBoard.cells, resBoard.width, resBoard.height));
-      console.table(board)
-    });
+    if(!gameOver)
+      invoke("cell_clicked", { x: x, y: y }).then(res => {
+        let board = JSON.parse(res as string);
+        let splitBoard = splitArray(board.cells, board.width, board.height);
+
+        // look for potential loss
+        if(contains(splitBoard, 9)) {
+          setGameOver(true);
+        }
+
+        setBoard(splitBoard);
+      });
   }
 
   let handleBoxRightClick = (x: number, y: number) => {
@@ -54,15 +70,15 @@ let BoardTable = (props: IProps) => {
       default: return <Numbered value={value} />    // Number
     }
   }
-  
+
   return (
     <table>
       <tbody>
-        {board.map((rows, i) => 
+        {board.map((rows, i) =>
           <tr key={i}>
-            {rows.map((_, j) => 
-              <td                   
-                key={j} 
+            {rows.map((_, j) =>
+              <td
+                key={j}
                 onClick={() => handleBoxClick(j, i)}
                 onContextMenu={() => handleBoxRightClick(j, i)}
               >
@@ -76,4 +92,4 @@ let BoardTable = (props: IProps) => {
   )
 }
 
-export default BoardTable
+export default BoardTable;

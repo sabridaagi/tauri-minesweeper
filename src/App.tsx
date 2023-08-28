@@ -9,7 +9,7 @@ const App = () => {
 
   return (
     <React.Fragment>
-    {ingame ? 
+    {ingame ?
         <Game changeIngame={() => setIngame(!ingame)} />
       :
         <Menu changeIngame={() => setIngame(!ingame)} />
