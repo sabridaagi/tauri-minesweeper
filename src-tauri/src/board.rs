@@ -45,9 +45,9 @@ impl Board {
         // cloning to return a new board
         let mut cloned_board = self.clone();
 
-        for (index, cell) in cloned_board.cells.iter_mut().enumerate() {
+        for (index, cell_value) in cloned_board.cells.iter_mut().enumerate() {
             if !opened_cells.contains(&(index as u16)) {
-                *cell = 10;
+                *cell_value = 10;
             }
         }
 
@@ -71,7 +71,35 @@ impl Board {
         serde_json::to_string(&self.hide_cells(&opened_cells)).expect("Failed to serialize board")
     }
 
+    /*
+     * Algorithm chosen is we loop through each of the board cells,
+     * then if not a bomb, discover neighbors arrays (directions) and
+     * calculate how many bombs are around for the given cell
+     */
     fn update_neighbors_count(&mut self) {
-        // TODO
+        let directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)];
+
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let index = y * self.width + x;
+
+                if self.cells[index] == 9 {
+                    continue;
+                }
+
+                for &(dy, dx) in &directions {
+                    let new_y = y as isize + dy;
+                    let new_x = x as isize + dx;
+
+                    // look for out of bounds
+                    if new_y >= 0 && new_y < self.height as isize && new_x >= 0 && new_x < self.width as isize {
+                        let new_index = new_y as usize * self.width + new_x as usize;
+                        if self.cells[new_index] == 9 {
+                            self.cells[index] += 1;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
