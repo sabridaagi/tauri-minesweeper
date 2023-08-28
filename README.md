@@ -1,7 +1,16 @@
-# Tauri + React + Typescript
+# Minesweeper example with Tauri
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+This is a quick and a quite simple project demonstrating how Tauri can work well with Rust and JavaScript/TypeScript
 
-## Recommended IDE Setup
+Backend is entirely done with Tauri and Rust, and frontend is written with React and Typescript.
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+Project is not fully done, this is just a showcase of Tauri potential
+
+# How to run
+
+1. Make sure you have nodejs installed
+2. Install packages with npm
+3. run 
+```bash
+  npm run tauri dev
+```
